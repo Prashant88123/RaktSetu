@@ -71,7 +71,7 @@ const BankDashboard = () => {
     fetchRequests()
     fetchDonors()
 
-    socketRef.current = io('http://localhost:5000')
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000')
     socketRef.current.on('inventory-changed', () => fetchInventory())
     socketRef.current.on(`bank-${user?._id}-request`, (data) => {
       setRequests((prev) => [data, ...prev])

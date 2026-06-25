@@ -26,7 +26,7 @@ const DonorDashboard = () => {
       }
     }
 
-    socketRef.current = io('http://localhost:5000')
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000')
     fetchProfile()
 
     socketRef.current.on('urgent-request', (data) => {

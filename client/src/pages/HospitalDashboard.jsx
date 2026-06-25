@@ -50,7 +50,7 @@ const HospitalDashboard = () => {
   useEffect(() => {
     fetchRequests()
 
-    socketRef.current = io('http://localhost:5000')
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000')
     socketRef.current.on(`hospital-${user?._id}-update`, (data) => {
       setRequests((prev) =>
         prev.map((r) =>
