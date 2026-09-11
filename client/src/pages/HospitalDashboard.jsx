@@ -3,6 +3,7 @@ import { io } from 'socket.io-client'
 import Navbar from '../components/Navbar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import api from '../utils/api.js'
+import { useNavigate } from 'react-router-dom'
 
 const BLOOD_TYPES    = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 const URGENCY_LEVELS = ['critical', 'moderate', 'low']
@@ -21,7 +22,7 @@ const statusStyles = {
 }
 
 const HospitalDashboard = () => {
-  const { user }      = useAuth()
+  const { user,logout }      = useAuth()
   const socketRef     = useRef(null)
   const [requests,    setRequests]   = useState([])
   const [loading,     setLoading]    = useState(true)
@@ -30,6 +31,24 @@ const HospitalDashboard = () => {
   const [form, setForm] = useState({
     bloodType: 'A+', unitsRequired: 1, urgencyLevel: 'moderate', condition: ''
   })
+  const navigate=useNavigate();
+
+  useEffect(() => {
+      const checkUser = async () => {
+        try {
+          const response = await api.get("/auth/me");
+          console.log(response.data);
+        } catch (error) {
+          if (error.response?.status === 401) {
+            logout()
+            navigate("/");
+          }
+        }
+      };
+  
+      checkUser();
+    }, []);
+
 
   const showMessage = (type, text) => {
     setMessage({ type, text })

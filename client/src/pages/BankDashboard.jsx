@@ -3,6 +3,7 @@ import { io } from 'socket.io-client'
 import api from '../utils/api'
 import Navbar from '../components/Navbar.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useNavigate } from 'react-router-dom'
 
 const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
@@ -13,7 +14,7 @@ const getUrgencyStyle = (units) => {
 }
 
 const BankDashboard = () => {
-  const { user }    = useAuth()
+  const { user,logout }    = useAuth()
   const socketRef   = useRef(null)
 
   const [inventory,     setInventory]     = useState(Object.fromEntries(BLOOD_TYPES.map((bt) => [bt, 0])))
@@ -29,6 +30,23 @@ const BankDashboard = () => {
   const [predictions,   setPredictions]   = useState({})
   const [usage,         setUsage]         = useState(Object.fromEntries(BLOOD_TYPES.map((bt) => [bt, 0])))
   const [loggingUsage,  setLoggingUsage]  = useState(false)
+  const navigate=useNavigate();
+
+  useEffect(() => {
+      const checkUser = async () => {
+        try {
+          const response = await api.get("/auth/me");
+          console.log(response.data);
+        } catch (error) {
+          if (error.response?.status === 401) {
+            logout()
+            navigate("/");
+          }
+        }
+      };
+  
+      checkUser();
+    }, [navigate]);
 
   const showMessage = (type, text) => {
     setMessage({ type, text })

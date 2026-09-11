@@ -4,12 +4,32 @@ import Navbar from '../components/Navbar.jsx'
 import MapView from '../components/MapView.jsx'
 import ProfileCard from '../components/ProfileCard.jsx'
 import api from '../utils/api.js'
+import { useAuth } from '../context/AuthContext.jsx'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 const DonorDashboard = () => {
   const socketRef   = useRef(null)
   const [donor,   setDonor]   = useState(null)
   const [alerts,  setAlerts]  = useState([])
   const [loading, setLoading] = useState(true)
+  const {logout} = useAuth();
+  const navigate=useNavigate();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const response = await api.get("/auth/me");
+        console.log(response.data);
+      } catch (error) {
+        if (error.response?.status === 401) {
+          logout()
+          navigate("/");
+        }
+      }
+    };
+
+    checkUser();
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
